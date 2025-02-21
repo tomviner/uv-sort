@@ -14,24 +14,32 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = ["packaging>=24.1", "tomlkit>=0.13.2", "typer>=0.12.5"]
+dependencies = ["packaging~=24.1", "tomlkit~=0.13", "typer>=0.15"]
 
 [project.urls]
 Repository = "https://github.com/ninoseki/uv-sort"
 
 [build-system]
-requires = ["hatchling", "uv-dynamic-versioning"]
+requires = ["hatchling", "uv-dynamic-versioning~=0.5"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "uv-dynamic-versioning"
 
+[tool.hatch.build.hooks.version]
+path = "src/uv_sort/_version.py"
+template = '''
+version = "{version}"
+'''
+
+
 [tool.uv]
 dev-dependencies = [
-    "pre-commit>=3.8.0",
-    "pytest>=8.3.2",
+    "build>=1.2.2.post1",
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.4",
     "pytest-pretty>=1.2.0",
-    "pytest-randomly>=3.15.0",
+    "pytest-randomly>=3.16.0",
 ]
 
 [project.scripts]
