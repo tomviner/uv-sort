@@ -59,3 +59,4 @@ select = [
     "T20", # flake8-print
     "W",   # pycodestyle warnings
 ]
+ignore = ["E501"]
