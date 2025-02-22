@@ -4,6 +4,14 @@
 
 Sort uv's dependencies alphabetically.
 
+The following sections are supported:
+
+- `dependency-groups`
+- `project.dependencies`
+- `project.optional-dependencies`
+- `tool.uv.dev-dependencies`
+- `tool.uv.sources`
+
 ## Installation
 
 ```bash

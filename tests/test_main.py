@@ -1,8 +1,27 @@
 from pathlib import Path
 
 import pytest
+from tomlkit import array
 
-from uv_sort.main import sort_toml_project
+from uv_sort.main import sort_array_by_name, sort_toml_project
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        ('["foo", "bar"]', '["bar", "foo"]'),
+        # should be multi-line if there is a line-break
+        ('["foo", \n"bar"]', '[ \n"bar","foo",\n]'),
+        # should be multi-line if there is a comment
+        ('["foo", # baz \n"bar"]', '[\n"bar","foo", # baz \n]'),
+        # should be intact if it only has one element
+        ('["foo" # bar\n]', '["foo" # bar\n]'),
+    ],
+)
+def test_sort_array_by_name(raw: str, expected: str):
+    arr = array(raw)
+    _sorted = sort_array_by_name(arr)
+    assert _sorted.as_string() == expected
 
 
 @pytest.fixture
@@ -13,23 +32,17 @@ def plain() -> str:
 def test_with_plain(plain: str):
     _sorted = sort_toml_project(plain)
 
-    assert _sorted["project"]["dependencies"] == [  # type: ignore
-        "pydantic>=2.8.2",
-        "tomlkit>=0.13.2",
-        "typer>=0.12.5",
-    ]
-    assert _sorted["project"]["optional-dependencies"] == {  # type: ignore
-        "docs": ["mkdocs>=1.6.0", "mkdocstrings[python]>=0.25.2"]
-    }
-    assert _sorted["tool"]["uv"]["dev-dependencies"] == [  # type: ignore
-        "pytest>=8.3.2",
-        "pytest-cov>=3.0.0",
-        "pytest-pretty>=1.2.0",
-        "pytest-randomly>=3.15.0",
-    ]
+    sorted_dependencies = sorted(["foo", "bar"])
+
+    # array
+    assert _sorted["project"]["dependencies"] == sorted_dependencies  # type: ignore
+    assert _sorted["tool"]["uv"]["dev-dependencies"] == sorted_dependencies  # type: ignore
+    # table
+    assert _sorted["project"]["optional-dependencies"] == {"docs": sorted_dependencies}  # type: ignore
+    assert _sorted["dependency-groups"] == {"dev": sorted_dependencies}  # type: ignore
     assert _sorted["tool"]["uv"]["sources"] == {  # type: ignore
-        "httpx": {"git": "https://github.com/encode/httpx"},
-        "requests": {"git": "https://github.com/psf/requests"},
+        "bar": {"git": "https://github.com/ninoseki/bar"},
+        "foo": {"git": "https://github.com/ninoseki/foo"},
     }
 
 
@@ -40,31 +53,38 @@ def comment() -> str:
 
 def test_with_comment(comment: str):
     _sorted = sort_toml_project(comment)
-    assert _sorted["project"]["dependencies"] == [  # type: ignore
-        "pydantic>=2.8.2",
-        "tomlkit>=0.13.2",
-        "typer>=0.12.5",
-    ]
 
+    sorted_dependencies = sorted(["foo", "bar"])
+
+    assert _sorted["project"]["dependencies"] == sorted_dependencies  # type: ignore
     assert (
-        '  "pydantic>=2.8.2", # foo!' in _sorted["project"]["dependencies"].as_string()  # type: ignore
+        _sorted["project"]["dependencies"].as_string()  # type: ignore
+        == '[\n  "bar", # baz\n  "foo",\n]'
     )
 
-    assert _sorted["project"]["optional-dependencies"] == {  # type: ignore
-        "docs": ["mkdocs>=1.6.0", "mkdocstrings[python]>=0.25.2"]
+    assert _sorted["tool"]["uv"]["dev-dependencies"] == sorted_dependencies  # type: ignore
+    assert (
+        _sorted["tool"]["uv"]["dev-dependencies"].as_string()  # type: ignore
+        == '[\n  "bar", # baz\n  "foo",\n]'
+    )
+
+    assert _sorted["project"]["optional-dependencies"] == {"docs": sorted_dependencies}  # type: ignore
+    assert (
+        _sorted["project"]["optional-dependencies"].as_string()  # type: ignore
+        == 'docs = [\n  "bar", # baz\n  "foo",\n]\n\n'
+    )
+
+    assert _sorted["dependency-groups"] == {"dev": sorted_dependencies}  # type: ignore
+    assert (
+        _sorted["dependency-groups"].as_string()  # type: ignore
+        == 'dev = [\n  "bar", # baz\n  "foo",\n]\n'
+    )
+
+    assert _sorted["tool"]["uv"]["sources"] == {  # type: ignore
+        "bar": {"git": "https://github.com/ninoseki/bar"},
+        "foo": {"git": "https://github.com/ninoseki/foo"},
     }
     assert (
-        '  "mkdocs>=1.6.0",                # bar!'
-        in _sorted["project"]["optional-dependencies"].as_string()  # type: ignore
-    )
-
-    assert _sorted["tool"]["uv"]["dev-dependencies"] == [  # type: ignore
-        "pytest>=8.3.2",
-        "pytest-cov>=3.0.0",
-        "pytest-pretty>=1.2.0",
-        "pytest-randomly>=3.15.0",
-    ]
-    assert (
-        '  "pytest>=8.3.2",           # baz!'
-        in _sorted["tool"]["uv"]["dev-dependencies"].as_string()  # type: ignore
+        _sorted["tool"]["uv"]["sources"].as_string()  # type: ignore
+        == 'bar = { git = "https://github.com/ninoseki/bar" }\nfoo = { git = "https://github.com/ninoseki/foo" }\n\n'
     )
