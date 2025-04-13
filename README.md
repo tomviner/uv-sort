@@ -34,7 +34,7 @@ $ uv-sort /path/to/pyproject.toml
 - `--check`: Check if dependencies are sorted and exit with a non-zero status code when they are not.
 - `--dry-run`: Output the modified file to stdout without modifying the file.
 
-## pre-commit
+## With [pre-commit](https://pre-commit.com/)
 
 ```yaml
 repos:
@@ -44,7 +44,7 @@ repos:
       - id: uv-sort
 ```
 
-## lefthook
+## With [Lefthook](https://lefthook.dev/)
 
 ```yaml
 pre-commit:

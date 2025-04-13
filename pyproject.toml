@@ -35,9 +35,8 @@ version = "{version}"
 
 [tool.uv]
 dev-dependencies = [
-    "build>=1.2.2.post1",
-    "pre-commit>=4.1.0",
-    "pytest>=8.3.4",
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
     "pytest-pretty>=1.2.0",
     "pytest-randomly>=3.16.0",
 ]
