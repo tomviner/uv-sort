@@ -17,6 +17,6 @@ jobs:
           python-version: 3.11
           cache: "pip"
       - run: pip install -r requirements.txt
-      - run: uv run pyproject-build
+      - run: uv build
       - name: publish
         uses: pypa/gh-action-pypi-publish@release/v1
