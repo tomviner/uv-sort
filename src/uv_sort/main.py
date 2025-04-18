@@ -112,7 +112,13 @@ def sort_table_by_name(x: Table) -> Table:
         display_name=x.display_name,
     )
 
-    for k, v in x.items():
+    for k, v in x.value.body:
+        if k is None:
+            # NOTE: v = Comment or Whitespace, etc?
+            #       anyway it should not be Array for sure
+            _sorted.add(v)  # type: ignore
+            continue
+
         v = cast(Array, v)
         _sorted.append(k, sort_array_by_name(v))
 

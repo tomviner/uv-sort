@@ -30,6 +30,7 @@ foo = { git = "https://github.com/ninoseki/foo" }
 bar = { git = "https://github.com/ninoseki/bar" }
 
 [dependency-groups]
+# baz
 dev = [
   "foo",
   "bar", # baz
