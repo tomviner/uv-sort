@@ -77,7 +77,7 @@ def test_with_comment(comment: str):
     assert _sorted["dependency-groups"] == {"dev": sorted_dependencies}  # type: ignore
     assert (
         _sorted["dependency-groups"].as_string()  # type: ignore
-        == 'dev = [\n  "bar", # baz\n  "foo",\n]\n'
+        == '# baz\ndev = [\n  "bar", # baz\n  "foo",\n]\n'
     )
 
     assert _sorted["tool"]["uv"]["sources"] == {  # type: ignore
