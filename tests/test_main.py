@@ -16,6 +16,11 @@ from uv_sort.main import sort_array_by_name, sort_toml_project
         ('["foo", # baz \n"bar"]', '[\n"bar","foo", # baz \n]'),
         # should be intact if it only has one element
         ('["foo" # bar\n]', '["foo" # bar\n]'),
+        # ref. https://github.com/ninoseki/uv-sort/issues/18
+        (
+            '["dvc-pandas>=0.3.3", "dvc[azure]>=3.59.2", "uv-sort>=0.5.1"]',
+            '["dvc-pandas>=0.3.3", "dvc[azure]>=3.59.2", "uv-sort>=0.5.1"]',
+        ),
     ],
 )
 def test_sort_array_by_name(raw: str, expected: str):

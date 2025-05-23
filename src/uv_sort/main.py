@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Optional, cast
 
 import tomlkit
-from packaging.requirements import Requirement
 from tomlkit.container import Container
 from tomlkit.items import (
     Array,
@@ -22,7 +21,7 @@ def is_processable(item: _ArrayItemGroup) -> bool:
 
 
 def key_builder(item: _ArrayItemGroup) -> str:
-    return Requirement(str(item.value)).name.casefold()
+    return str(item.value).casefold()
 
 
 def one_line_array_mapper(
