@@ -1,4 +1,5 @@
 from pathlib import Path
+from textwrap import dedent
 
 import pytest
 from tomlkit import array
@@ -53,12 +54,13 @@ def test_sort_from_file(tmp_path):
     """Test the sort function that reads from a file path"""
     from uv_sort.main import sort
 
-    toml_content = """[project]
-dependencies = [
-    "zebra",
-    "alpha",
-]
-"""
+    toml_content = dedent("""\
+        [project]
+        dependencies = [
+            "zebra",
+            "alpha",
+        ]
+        """)
 
     test_file = tmp_path / "test.toml"
     test_file.write_text(toml_content)
