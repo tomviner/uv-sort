@@ -21,3 +21,5 @@ jobs:
           key: uv-${{ matrix.python-version }}-${{ hashFiles('uv.lock') }}
       - run: uv sync --frozen
       - run: uv run pytest
+      - name: Check dependencies are sorted
+        run: uv run uv-sort --check
