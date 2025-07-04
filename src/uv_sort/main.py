@@ -89,7 +89,7 @@ def sort_array_by_name(x: Array) -> Array:
     grouped_items: list[tuple[list[_ArrayItemGroup], _ArrayItemGroup]] = []
     preceding_comments: list[_ArrayItemGroup] = []
     trailing_comments: list[_ArrayItemGroup] = []
-    
+
     for item in x._value:
         if is_standalone_comment(item):
             # Accumulate standalone comments
@@ -99,27 +99,28 @@ def sort_array_by_name(x: Array) -> Array:
             grouped_items.append((preceding_comments.copy(), item))
             preceding_comments.clear()
         # Skip other non-processable items (whitespace, etc.)
-    
+
     # Any remaining comments are trailing comments
     trailing_comments = preceding_comments
-    
+
     # Sort the grouped items by the dependency value
     _sorted = sorted(grouped_items, key=lambda group: key_builder(group[1]))
-    
+
     # Flatten the sorted groups back into a list
     flattened: list[_ArrayItemGroup] = []
     for comments, item in _sorted:
         flattened.extend(comments)
         flattened.append(item)
-    
+
     # Add trailing comments at the end
     flattened.extend(trailing_comments)
-    
-    # rebuild the array with preserving comments & indentation
-    # consider adding a line-break at last if the last indent has a line-break
+
+    # No data to process or sort
     if not flattened:
         return x
-        
+
+    # rebuild the array with preserving comments & indentation
+    # consider adding a line-break at last if the last indent has a line-break
     last_indent = flattened[-1].indent
     has_line_break_at_last = (
         last_indent.as_string() if last_indent else ""
