@@ -52,17 +52,17 @@ def test_sort_array_by_name(raw: str, expected: str):
 def test_sort_from_file(tmp_path):
     """Test the sort function that reads from a file path"""
     from uv_sort.main import sort
-    
+
     toml_content = """[project]
 dependencies = [
     "zebra",
     "alpha",
 ]
 """
-    
+
     test_file = tmp_path / "test.toml"
     test_file.write_text(toml_content)
-    
+
     result = sort(test_file)
     assert "alpha" in result
     assert "zebra" in result
